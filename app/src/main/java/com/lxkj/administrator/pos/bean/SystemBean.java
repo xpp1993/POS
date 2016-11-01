@@ -5,7 +5,6 @@ package com.lxkj.administrator.pos.bean;
  * 系统设置类
  */
 public class SystemBean {
-    private int PKID;
     private String POSNUM;//机号
     private String ONECODE;
     private String TWOCODE;
@@ -21,8 +20,7 @@ public class SystemBean {
     public SystemBean() {
     }
 
-    public SystemBean(int PKID, String POSNUM, String ONECODE, String TWOCODE, String THREECODE, String ADDRESS, String IP, String PORT, String DATE, String min, String max, String AREACODE) {
-        this.PKID = PKID;
+    public SystemBean( String POSNUM, String ONECODE, String TWOCODE, String THREECODE, String ADDRESS, String IP, String PORT, String DATE, String min, String max, String AREACODE) {
         this.POSNUM = POSNUM;
         this.ONECODE = ONECODE;
         this.TWOCODE = TWOCODE;
@@ -36,13 +34,6 @@ public class SystemBean {
         this.AREACODE = AREACODE;
     }
 
-    public int getPKID() {
-        return PKID;
-    }
-
-    public void setPKID(int PKID) {
-        this.PKID = PKID;
-    }
 
     public String getPOSNUM() {
         return POSNUM;
@@ -135,7 +126,6 @@ public class SystemBean {
     @Override
     public String toString() {
         return "SystemBean{" +
-                "PKID=" + PKID +
                 ", POSNUM='" + POSNUM + '\'' +
                 ", ONECODE='" + ONECODE + '\'' +
                 ", TWOCODE='" + TWOCODE + '\'' +
