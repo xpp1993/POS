@@ -100,16 +100,38 @@ public class DrugButtonBeanService {
         if (cursor.moveToFirst()) {//间数据的指针移到第一行
             do {//遍历所有的Cursor对象
                 String buttonName = cursor.getString(cursor.getColumnIndex(ParameterManager.BUTTONNAME));
+                if (buttonName==null||buttonName.equals(""))
+                    return null;
                 String buttonValue = cursor.getString(cursor.getColumnIndex(ParameterManager.BUTTONVALU));
+                if (buttonValue==null||buttonValue.equals(""))
+                    return null;
                 String drugcoding = cursor.getString(cursor.getColumnIndex(ParameterManager.DRUGCODING));
+                if (drugcoding==null||drugcoding.equals(""))
+                    return null;
                 String drugName = cursor.getString(cursor.getColumnIndex(ParameterManager.DRUGNAME));
+                if (drugName==null||drugName.equals(""))
+                    return null;
                 String drugStyle = cursor.getString(cursor.getColumnIndex(ParameterManager.DRUGSTYLE));
+                if (drugStyle==null||drugStyle.equals(""))
+                    return null;
                 String useStatus = cursor.getString(cursor.getColumnIndex(ParameterManager.USESTATUS));
+                if (useStatus==null||useStatus.equals(""))
+                    return null;
                 String currentAmo = cursor.getString(cursor.getColumnIndex(ParameterManager.CURRENTAMO));
+                if (currentAmo==null||currentAmo.equals(""))
+                    return null;
                 String maxAmount = cursor.getString(cursor.getColumnIndex(ParameterManager.MAXAMOUNT));
+                if (maxAmount==null||maxAmount.equals(""))
+                    return null;
                 String valueDate = cursor.getString(cursor.getColumnIndex(ParameterManager.VALIDDATE));
+                if (valueDate==null||valueDate.equals(""))
+                    return null;
                 String batch = cursor.getString(cursor.getColumnIndex(ParameterManager.BATCH));
+                if (batch==null||batch.equals(""))
+                    return null;
                 String rootJiao = cursor.getString(cursor.getColumnIndex(ParameterManager.ROOTJIAO));
+                if (rootJiao==null||rootJiao.equals(""))
+                    return null;
                 drugButtonBean = new DrugButtonBean( buttonName, buttonValue, drugcoding, drugName, drugStyle, useStatus, currentAmo, maxAmount, valueDate, batch, rootJiao);
             } while (cursor.moveToNext());
         }

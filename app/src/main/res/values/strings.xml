@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">POS</string>
+    <string name="Id_show">请刷身份证领取药具</string>
 </resources>

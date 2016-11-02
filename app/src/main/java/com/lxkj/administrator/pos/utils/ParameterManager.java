@@ -34,4 +34,8 @@ public class ParameterManager {
     public static final String SYSTEMBEAN_Min_VALUE = "15";//最小年龄
     public static final String SYSTEMBEAN_Max_VALUE = "65";//最大年龄
     public static final String SYSTEMBEAN_AREACODE_VALUE = "1";//区编码
+    public static final String ID = "ID";//身份证号
+    public static final String DATE = "DATE";//日期
+    public static final String FLAG = "FLAG";//
+    public static final String LIST = "LIST";//
 }

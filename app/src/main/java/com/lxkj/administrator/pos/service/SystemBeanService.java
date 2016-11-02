@@ -50,31 +50,54 @@ public class SystemBeanService {
 //        Log.v(TAG, "delete success !!!");
 //    }
 //
-//    /**
-//     * 查询数据
-//     */
-//    public SystemBean find(int PKID) {
-//        database = mySqliteHelper.getReadableDatabase();
-//        SystemBean systemBean;
-//        Cursor cursor = database.rawQuery("select *from student where PKID = ?", new String[]{String.valueOf(PKID)});
-//        while (cursor.moveToNext()) {
-//            systemBean = new SystemBean();
-//            systemBean.setPOSNUM(cursor.getString(cursor.getColumnIndex("POSNUM")));
-//            systemBean.setONECODE(cursor.getString(cursor.getColumnIndex("ONECODE")));
-//            systemBean.setTWOCODE(cursor.getString(cursor.getColumnIndex("TWOCODE")));
-//            systemBean.setTHREECODE(cursor.getString(cursor.getColumnIndex("THREECODE")));
-//            systemBean.setADDRESS(cursor.getString(cursor.getColumnIndex("ADDRESS")));
-//            systemBean.setIP(cursor.getString(cursor.getColumnIndex("IP")));
-//            systemBean.setPORT(cursor.getString(cursor.getColumnIndex("PORT")));
-//            systemBean.setDATE(cursor.getString(cursor.getColumnIndex("DATE")));
-//            systemBean.setMin(cursor.getString(cursor.getColumnIndex("Min")));
-//            systemBean.setMax(cursor.getString(cursor.getColumnIndex("Max")));
-//            systemBean.setAREACODE(cursor.getString(cursor.getColumnIndex("AREACODE")));
-//            Log.v(TAG, systemBean.toString());
-//            return systemBean;
-//        }
-//        return null;
-//    }
+
+    /**
+     * 查询所有的数据
+     */
+    public SystemBean findAll() {
+        database = mySqliteHelper.getReadableDatabase();
+        SystemBean systemBean;
+        Cursor cursor = database.rawQuery("select * from " + ParameterManager.TABLENAME_SYSTEMBEAN, null);
+        while (cursor.moveToNext()) {
+            String posNum = cursor.getString(cursor.getColumnIndex("POSNUM"));
+            if (posNum==null||posNum.equals(""))
+                return null;
+            String onecode = cursor.getString(cursor.getColumnIndex("ONECODE"));
+            if (onecode==null||onecode.equals(""))
+                return null;
+            String twocode = cursor.getString(cursor.getColumnIndex("TWOCODE"));
+            if (twocode==null||twocode.equals(""))
+                return null;
+            String threecode = cursor.getString(cursor.getColumnIndex("THREECODE"));
+            if (threecode==null||threecode.equals(""))
+                return null;
+            String address = cursor.getString(cursor.getColumnIndex("ADDRESS"));
+            if (address==null||address.equals(""))
+                return null;
+            String ip = cursor.getString(cursor.getColumnIndex("IP"));
+            if (ip==null||ip.equals(""))
+                return null;
+            String port = cursor.getString(cursor.getColumnIndex("PORT"));
+            if (port==null||port.equals(""))
+                return null;
+            String date = cursor.getString(cursor.getColumnIndex("DATE"));
+            if (date==null||date.equals(""))
+                return null;
+            String min = cursor.getString(cursor.getColumnIndex("Min"));
+            if (min==null||min.equals(""))
+                return null;
+            String max = cursor.getString(cursor.getColumnIndex("Max"));
+            if (max==null||max.equals(""))
+                return null;
+            String areacode = cursor.getString(cursor.getColumnIndex("AREACODE"));
+            if (areacode==null||areacode.equals(""))
+                return null;
+            systemBean = new SystemBean(posNum, onecode, twocode, threecode, address, ip, port, date, min, max, areacode);
+            Log.v(TAG, systemBean.toString());
+            return systemBean;
+        }
+        return null;
+    }
 //
 //    /**
 //     * 修改数据
