@@ -2,6 +2,7 @@ package com.lxkj.administrator.pos;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             if (!dateStr[1].equals(calendar.get(Calendar.DAY_OF_YEAR))) {//如果不是当前年份，清空BlackBean表中数据
                 lygBeanService.delect(ParameterManager.TABLENAME_BLACKBEAN, null, null);
             }
-            //显示：请刷身份证领取药具
+            //5.显示：请刷身份证领取药具
             showIdDialog();
 
         }
@@ -75,7 +76,17 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("提示").
                 setMessage(getResources().getString(R.string.Id_show))
-                .setNegativeButton("关闭", null)
+                .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //6.监听按键6,按6把DrugButtonBean中的Max的值复制到该条记录的CURRENTAMO中，屏幕显示：恢复最大数量成功！
+
+                        //7.打开串口，等待获取身份证信息，获取到信息后，关闭串口
+
+
+                    }
+                })
+                .setNegativeButton("取消", null)
                 .setCancelable(false)
                 .create()
                 .show();
