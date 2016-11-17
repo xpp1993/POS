@@ -192,12 +192,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (keyCode == event.KEYCODE_6 || keyCode == event.KEYCODE_NUMPAD_6) {
             DrugButtonBean drugButtonBean = drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null, null, null);
             drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", drugButtonBean.getMAXAMOUNT(), null, null);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage(getResources().getString(R.string.max_show))
                     .setNegativeButton("关闭", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            builder.show();//显示请刷身份证领取药具
+                            builder_identity.show();//显示请刷身份证领取药具
                         }
                     })
                     .setCancelable(false)
