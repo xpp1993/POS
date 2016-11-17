@@ -20,6 +20,8 @@ public class MySqliteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CreatTableSql.SYSTEMBEAN_TABLE);//创建系统设置表
         db.execSQL(CreatTableSql.DRUGBUTTONCEAN_TABLE);//药具和通道对应关系表
+        db.execSQL(CreatTableSql.SYSTEMBEAN_TABLE_DUPLICATEFILE);//创建系统设置备份表
+        db.execSQL(CreatTableSql.DRUGBUTTONCEAN_TABLE_DUPLICATEFILE);//药具和通道对应关系备份表
         db.execSQL(CreatTableSql.LYGBEAN_TABLE); //本月本机器上领用情况
         db.execSQL(CreatTableSql.MLYGBEAN_TABLE);  //本月所有机器上领用情况
         db.execSQL(CreatTableSql.BLACKBEAN_TABLE);  //黑名单表

@@ -15,12 +15,14 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         //启动服务包
-        Intent service = new Intent(context, MainActivity.class);
-        context.startService(service);
-        //启动应用，参数为需要自动启动的应用的包名
-        System.out.print("开机服务自动启动.....");
-        Intent i = context.getPackageManager().getLaunchIntentForPackage("com.lxkj.administrator.pos");
+//        Intent service = new Intent(context, MainActivity.class);
+//        context.startService(service);
+//        //启动应用，参数为需要自动启动的应用的包名
+//        System.out.print("开机服务自动启动.....");
+//        Intent i = context.getPackageManager().getLaunchIntentForPackage("com.lxkj.administrator.pos");
+//        context.startActivity(i);
+        Intent i = new Intent(context, MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
-
     }
 }

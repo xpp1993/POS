@@ -27,9 +27,9 @@ public class SystemBeanService {
      *
      * @param systemBean
      */
-    public void insert(SystemBean systemBean) {
+    public void insert(String tablename, SystemBean systemBean) {
         database = mySqliteHelper.getReadableDatabase();
-        database.execSQL("insert into " + ParameterManager.TABLENAME_SYSTEMBEAN +
+        database.execSQL("insert into " + tablename +
                         "(POSNUM, ONECODE, TWOCODE, THREECODE, ADDRESS,IP,PORT,DATE,Min,Max, AREACODE) " +
                         "values(?,?,?,?,?,?,?,?,?,?,?)",
                 new Object[]{systemBean.getPOSNUM(), systemBean.getONECODE(),
@@ -38,7 +38,7 @@ public class SystemBeanService {
                         systemBean.getPORT(), systemBean.getDATE(),
                         systemBean.getMin(), systemBean.getMax(),
                         systemBean.getTHREECODE()});
-        Log.v(TAG, "insert success !!!");
+        Log.e(TAG, "insert success !!!");
     }
 
 //    /**
@@ -52,48 +52,62 @@ public class SystemBeanService {
 //
 
     /**
+     * 删除数据
+     *
+     * @param tableName
+     * @param selection
+     * @param selectionArgs
+     */
+    public void delect(String tableName, String selection, String[] selectionArgs) {
+        database = mySqliteHelper.getReadableDatabase();
+        database.delete(tableName, selection, selectionArgs);
+        Log.v(TAG, "delect success !!!");
+    }
+
+    /**
      * 查询所有的数据
      */
-    public SystemBean findAll() {
+    public SystemBean findAll(String tableName) {
         database = mySqliteHelper.getReadableDatabase();
         SystemBean systemBean;
-        Cursor cursor = database.rawQuery("select * from " + ParameterManager.TABLENAME_SYSTEMBEAN, null);
+//        Cursor cursor = database.rawQuery("select * from " + ParameterManager.TABLENAME_SYSTEMBEAN, null);
+        Cursor cursor = database.rawQuery("select * from " + tableName, null);
         while (cursor.moveToNext()) {
             String posNum = cursor.getString(cursor.getColumnIndex("POSNUM"));
-            if (posNum==null||posNum.equals(""))
+            if (posNum == null || posNum.equals(""))
                 return null;
             String onecode = cursor.getString(cursor.getColumnIndex("ONECODE"));
-            if (onecode==null||onecode.equals(""))
+            if (onecode == null || onecode.equals(""))
                 return null;
             String twocode = cursor.getString(cursor.getColumnIndex("TWOCODE"));
-            if (twocode==null||twocode.equals(""))
+            if (twocode == null || twocode.equals(""))
                 return null;
             String threecode = cursor.getString(cursor.getColumnIndex("THREECODE"));
-            if (threecode==null||threecode.equals(""))
+            if (threecode == null || threecode.equals(""))
                 return null;
             String address = cursor.getString(cursor.getColumnIndex("ADDRESS"));
-            if (address==null||address.equals(""))
+            if (address == null || address.equals(""))
                 return null;
             String ip = cursor.getString(cursor.getColumnIndex("IP"));
-            if (ip==null||ip.equals(""))
+            if (ip == null || ip.equals(""))
                 return null;
             String port = cursor.getString(cursor.getColumnIndex("PORT"));
-            if (port==null||port.equals(""))
+            if (port == null || port.equals(""))
                 return null;
             String date = cursor.getString(cursor.getColumnIndex("DATE"));
-            if (date==null||date.equals(""))
+            if (date == null || date.equals(""))
                 return null;
             String min = cursor.getString(cursor.getColumnIndex("Min"));
-            if (min==null||min.equals(""))
+            if (min == null || min.equals(""))
                 return null;
             String max = cursor.getString(cursor.getColumnIndex("Max"));
-            if (max==null||max.equals(""))
+            if (max == null || max.equals(""))
                 return null;
             String areacode = cursor.getString(cursor.getColumnIndex("AREACODE"));
-            if (areacode==null||areacode.equals(""))
+            if (areacode == null || areacode.equals(""))
                 return null;
             systemBean = new SystemBean(posNum, onecode, twocode, threecode, address, ip, port, date, min, max, areacode);
-            Log.v(TAG, systemBean.toString());
+            Log.e(TAG, systemBean.toString());
             return systemBean;
         }
         return null;

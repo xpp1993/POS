@@ -8,7 +8,9 @@ public class ParameterManager {
     public static final String HOST = "http://120.24.86.194:8081";//WebServiceip
     public static final String WEBSERVICE = "/WS/GrantService.asmx";
     public static final String TABLENAME_DRUGBUTTONBEAN = "_DrugButtonBean";//药具通道和药具关系对应表名
+    public static final String TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE = "_DrugButtonBean_duplicate_file";//药具通道和药具关系对应备份表名
     public static final String TABLENAME_SYSTEMBEAN = "_SystemBean";//系统设置表名
+    public static final String TABLENAME_SYSTEMBEAN_DUPLICATEFILE = "_SystemBean_duplicate_file";//系统设置备份表名
     public static final String TABLENAME_BLACKBEAN = "_BlackBean";//黑名单应表名
     public static final String TABLENAME_LYGBEAN = "_LYGBean";//本月本机器上领用情况表名
     public static final String TABLENAME_MLYGBEAN = "_MLYGBean";//本月所有机器上领用情况表名

@@ -50,11 +50,12 @@ public class DrugButtonBeanService {
      *
      * @param values ContentValues values
      */
-    public void insert(ContentValues values) {
+    public void insert(String tableName, ContentValues values) {
         database = mySqliteHelper.getReadableDatabase();
-        database.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null, values);
+        database.insert(tableName, null, values);
         values.clear();
-        Log.v(TAG, "insert success !!!");
+        if (query(tableName,null,null,null).toString()!=null)
+        Log.e(TAG, "insert success !!!"+query(tableName,null,null,null).toString());
     }
 
     /**
@@ -65,12 +66,13 @@ public class DrugButtonBeanService {
      * @param selection       指定where的约束条件
      * @param selectionArgs   为where中的占位符 提供具体的值
      */
-    public void updata(String selectionParams, String value, String selection, String[] selectionArgs) {
+    public void updata(String tableName, String selectionParams, String value, String selection, String[] selectionArgs) {
         database = mySqliteHelper.getReadableDatabase();
         values.put(selectionParams, value);
-        database.update(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values, selection, selectionArgs);
+//        database.update(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values, selection, selectionArgs);
+        database.update(tableName, values, selection, selectionArgs);
         values.clear();
-        Log.v(TAG, "updata success !!!");
+        Log.e(TAG, "updata success !!!" + query(tableName, null, selection, selectionArgs).toString());
     }
 
     /**
@@ -79,10 +81,11 @@ public class DrugButtonBeanService {
      * @param selection     指定where的约束条件
      * @param selectionArgs 为where中的占位符 提供具体的值
      */
-    public void delect(String selection, String[] selectionArgs) {
+    public void delect(String tableName, String selection, String[] selectionArgs) {
         database = mySqliteHelper.getReadableDatabase();
-        database.delete(ParameterManager.TABLENAME_DRUGBUTTONBEAN, selection, selectionArgs);
-        Log.v(TAG, "delect success !!!");
+//        database.delete(ParameterManager.TABLENAME_DRUGBUTTONBEAN, selection, selectionArgs);
+        database.delete(tableName, selection, selectionArgs);
+        Log.e(TAG, "delect success !!!");
     }
 
     /**
@@ -93,49 +96,52 @@ public class DrugButtonBeanService {
      * @param selectionArgs
      * @return
      */
-    public DrugButtonBean query(String[] columns, String selection, String[] selectionArgs) {
+    public DrugButtonBean query(String tableName, String[] columns, String selection, String[] selectionArgs) {
         database = mySqliteHelper.getReadableDatabase();
-        Cursor cursor = database.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, columns, selection, selectionArgs, null, null, null);
+//        Cursor cursor = database.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, columns, selection, selectionArgs, null, null, null);
+        Cursor cursor = database.query(tableName, columns, selection, selectionArgs, null, null, null);
         DrugButtonBean drugButtonBean = null;
         if (cursor.moveToFirst()) {//间数据的指针移到第一行
             do {//遍历所有的Cursor对象
                 String buttonName = cursor.getString(cursor.getColumnIndex(ParameterManager.BUTTONNAME));
-                if (buttonName==null||buttonName.equals(""))
+                if (buttonName == null || buttonName.equals(""))
                     return null;
                 String buttonValue = cursor.getString(cursor.getColumnIndex(ParameterManager.BUTTONVALU));
-                if (buttonValue==null||buttonValue.equals(""))
+                if (buttonValue == null || buttonValue.equals(""))
                     return null;
                 String drugcoding = cursor.getString(cursor.getColumnIndex(ParameterManager.DRUGCODING));
-                if (drugcoding==null||drugcoding.equals(""))
+                if (drugcoding == null || drugcoding.equals(""))
                     return null;
                 String drugName = cursor.getString(cursor.getColumnIndex(ParameterManager.DRUGNAME));
-                if (drugName==null||drugName.equals(""))
+                if (drugName == null || drugName.equals(""))
                     return null;
                 String drugStyle = cursor.getString(cursor.getColumnIndex(ParameterManager.DRUGSTYLE));
-                if (drugStyle==null||drugStyle.equals(""))
+                if (drugStyle == null || drugStyle.equals(""))
                     return null;
                 String useStatus = cursor.getString(cursor.getColumnIndex(ParameterManager.USESTATUS));
-                if (useStatus==null||useStatus.equals(""))
+                if (useStatus == null || useStatus.equals(""))
                     return null;
                 String currentAmo = cursor.getString(cursor.getColumnIndex(ParameterManager.CURRENTAMO));
-                if (currentAmo==null||currentAmo.equals(""))
+                if (currentAmo == null || currentAmo.equals(""))
                     return null;
                 String maxAmount = cursor.getString(cursor.getColumnIndex(ParameterManager.MAXAMOUNT));
-                if (maxAmount==null||maxAmount.equals(""))
+                if (maxAmount == null || maxAmount.equals(""))
                     return null;
                 String valueDate = cursor.getString(cursor.getColumnIndex(ParameterManager.VALIDDATE));
-                if (valueDate==null||valueDate.equals(""))
+                if (valueDate == null || valueDate.equals(""))
                     return null;
                 String batch = cursor.getString(cursor.getColumnIndex(ParameterManager.BATCH));
-                if (batch==null||batch.equals(""))
+                if (batch == null || batch.equals(""))
                     return null;
                 String rootJiao = cursor.getString(cursor.getColumnIndex(ParameterManager.ROOTJIAO));
-                if (rootJiao==null||rootJiao.equals(""))
+                if (rootJiao == null || rootJiao.equals(""))
                     return null;
-                drugButtonBean = new DrugButtonBean( buttonName, buttonValue, drugcoding, drugName, drugStyle, useStatus, currentAmo, maxAmount, valueDate, batch, rootJiao);
+                drugButtonBean = new DrugButtonBean(buttonName, buttonValue, drugcoding, drugName, drugStyle, useStatus, currentAmo, maxAmount, valueDate, batch, rootJiao);
             } while (cursor.moveToNext());
         }
         cursor.close();
+        if (drugButtonBean!=null)
+        Log.e(TAG, "updata success !!!" +drugButtonBean.toString());
         return drugButtonBean;
     }
 }
