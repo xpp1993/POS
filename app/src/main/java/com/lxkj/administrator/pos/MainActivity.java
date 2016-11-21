@@ -7,8 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.Button;
 
 import com.lxkj.administrator.pos.bean.DrugButtonBean;
 import com.lxkj.administrator.pos.bean.LYGBean;
@@ -27,13 +25,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity  {
     private MySqliteHelper mySqliteHelper;
     private SystemBeanService systemBeanService;
     private DrugButtonBeanService drugButtonBeanService;
     private LYGBeanService lygBeanService;
     private Calendar calendar;
-    private Button key_6;
+   /// private Button key_6;
     private static final String TAG = MainActivity.class.getSimpleName();
     private AlertDialog.Builder builder_identity;
     private boolean isHasIdInLYGBEAN = false;
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drugButtonBeanService = new DrugButtonBeanService(mySqliteHelper);
         lygBeanService = new LYGBeanService(mySqliteHelper);
         calendar = Calendar.getInstance();
-        key_6 = (Button) findViewById(R.id.key_6);
+       // key_6 = (Button) findViewById(R.id.key_6);
         //判断apk是否是第一次登录
         if (AppUtils.isFirstInstall()) {
             AppUtils.firstInstall();
@@ -123,24 +121,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //6.监听按键6,按6把DrugButtonBean中的Max的值复制到该条记录的CURRENTAMO中，屏幕显示：恢复最大数量成功！
-                        key_6.setOnClickListener(MainActivity.this);
-                        //7.打开串口，等待获取身份证信息，获取到信息后，关闭串口
-                        //8.根据身份证号和当前手机时间判断年龄是否15至65之间
-                        String id = "360121199304201427";
-                        int age = MainActivity.this.getAgeforIdCard(id);
-                        Log.e(TAG, age + "岁");
-                        if (age < 15 || age > 65) {//显示你不符合领取条件
-                            showDialog(getResources().getString(R.string.show1));
-                        } else {
-                            ifTrueAge(id);
-                        }
+                        /**
+                         * 刷身份证
+                         */
+                        pos("360121199304201427");
+
                     }
                 })
                 .setNegativeButton("取消", null)
                 .setCancelable(false)
                 .create()
                 .show();
+    }
+
+    /**
+     * 刷身份证
+     */
+    private void pos(String id) {
+        //6.监听按键6,按6把DrugButtonBean中的Max的值复制到该条记录的CURRENTAMO中，屏幕显示：恢复最大数量成功！
+//        key_6.setOnClickListener(MainActivity.this);
+        //7.打开串口，等待获取身份证信息，获取到信息后，关闭串口
+        //8.根据身份证号和当前手机时间判断年龄是否15至65之间
+        //String id = "360121199304201427";
+        int age = MainActivity.this.getAgeforIdCard(id);
+        Log.e(TAG, age + "岁");
+        if (age < 15 || age > 65) {//显示你不符合领取条件
+            showDialog(getResources().getString(R.string.show1));
+        } else {
+            ifTrueAge(id);
+        }
+
     }
 
     /**
@@ -192,7 +202,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setNegativeButton("关闭", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        builder_identity.show();//显示请刷身份证领取药具
+//                        builder_identity.show();//显示请刷身份证领取药具
+                       // pos(" ");
                     }
                 })
                 .setCancelable(false)
@@ -252,21 +263,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lygBeanService.insert(ParameterManager.TABLENAME_LYGBEAN, values);
     }
 
-    //按了按键6之后
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.key_6://6把DrugButtonBean中的Max的值复制到该条记录的CURRENTAMO中，屏幕显示：恢复最大数量成功！
-                List<DrugButtonBean> drugButtonBeans = drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null, null, null);
-                for (DrugButtonBean drugButtonBean : drugButtonBeans) {
-                    drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", drugButtonBean.getMAXAMOUNT(), null, null);
-                }
-                showDialog(getResources().getString(R.string.max_show));
-                break;
-            default:
-                break;
-        }
-    }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
