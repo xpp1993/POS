@@ -9,6 +9,9 @@ import com.lxkj.administrator.pos.bean.LYGBean;
 import com.lxkj.administrator.pos.utils.MySqliteHelper;
 import com.lxkj.administrator.pos.utils.ParameterManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2016/11/2.
  */
@@ -46,7 +49,8 @@ public class LYGBeanService {
         database = mySqliteHelper.getReadableDatabase();
         database.insert(tableName, null, values);
         values.clear();
-        Log.v(TAG, "insert success !!!");
+        if (query(tableName, null, null, null) != null)
+            Log.e(TAG, "insert success !!!" + query(tableName, null, null, null));
     }
 
     /**
@@ -59,21 +63,23 @@ public class LYGBeanService {
     public void delect(String tableName, String selection, String[] selectionArgs) {
         database = mySqliteHelper.getReadableDatabase();
         database.delete(tableName, selection, selectionArgs);
-        Log.v(TAG, "delect success !!!");
+        Log.e(TAG, "delect success !!!");
     }
 
     /**
      * 查询数据
-     * @param tableName 表名
+     *
+     * @param tableName     表名
      * @param columns
      * @param selection
      * @param selectionArgs
      * @return
      */
-    public LYGBean query(String tableName, String[] columns, String selection, String[] selectionArgs) {
+    public List<LYGBean> query(String tableName, String[] columns, String selection, String[] selectionArgs) {
         database = mySqliteHelper.getReadableDatabase();
         Cursor cursor = database.query(tableName, columns, selection, selectionArgs, null, null, null);
         LYGBean lygBean = null;
+        List<LYGBean> listBeans = new ArrayList<>();
         if (cursor.moveToFirst()) {//间数据的指针移到第一行
             do {//遍历所有的Cursor对象
                 String Id = cursor.getString(cursor.getColumnIndex(ParameterManager.ID));
@@ -81,9 +87,10 @@ public class LYGBeanService {
                 String flag = cursor.getString(cursor.getColumnIndex(ParameterManager.FLAG));
                 String list = cursor.getString(cursor.getColumnIndex(ParameterManager.LIST));
                 lygBean = new LYGBean(Id, date, flag, list);
+                listBeans.add(lygBean);
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return lygBean;
+        return listBeans;
     }
 }

@@ -2,4 +2,8 @@
     <string name="app_name">POS</string>
     <string name="Id_show">请刷身份证领取药具</string>
     <string name="max_show">恢复最大数量成功！</string>
+    <string name="show1">你不符合领取条件！</string>
+    <string name="show2">本月已领取！</string>
+    <string name="show3">本月已领了！</string>
+    <string name="show4">本年度已领完</string>
 </resources>

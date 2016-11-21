@@ -127,7 +127,7 @@ public class DrugButtonBean {
     @Override
     public String toString() {
         return "DrugButtonBean{" +
-                ", BUTTONNAME='" + BUTTONNAME + '\'' +
+                " BUTTONNAME='" + BUTTONNAME + '\'' +
                 ", BUTTONVALU='" + BUTTONVALU + '\'' +
                 ", DRUGCODING='" + DRUGCODING + '\'' +
                 ", DRUGNAME='" + DRUGNAME + '\'' +

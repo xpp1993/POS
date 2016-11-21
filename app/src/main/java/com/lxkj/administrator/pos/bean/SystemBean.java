@@ -126,7 +126,7 @@ public class SystemBean {
     @Override
     public String toString() {
         return "SystemBean{" +
-                ", POSNUM='" + POSNUM + '\'' +
+                " POSNUM='" + POSNUM + '\'' +
                 ", ONECODE='" + ONECODE + '\'' +
                 ", TWOCODE='" + TWOCODE + '\'' +
                 ", THREECODE='" + THREECODE + '\'' +

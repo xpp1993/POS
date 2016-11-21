@@ -1,14 +1,11 @@
 package com.lxkj.administrator.pos.service;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.lxkj.administrator.pos.bean.SystemBean;
 import com.lxkj.administrator.pos.utils.MySqliteHelper;
-import com.lxkj.administrator.pos.utils.ParameterManager;
-
 /**
  * Created by Administrator on 2016/9/22.
  * 提供增删查改SystemBean表方法类

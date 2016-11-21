@@ -9,6 +9,9 @@ import com.lxkj.administrator.pos.bean.DrugButtonBean;
 import com.lxkj.administrator.pos.utils.MySqliteHelper;
 import com.lxkj.administrator.pos.utils.ParameterManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2016/9/22.
  * 增删查改DrugButtonBean表类
@@ -72,6 +75,7 @@ public class DrugButtonBeanService {
 //        database.update(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values, selection, selectionArgs);
         database.update(tableName, values, selection, selectionArgs);
         values.clear();
+        if (query(tableName, null, selection, selectionArgs).toString()!=null)
         Log.e(TAG, "updata success !!!" + query(tableName, null, selection, selectionArgs).toString());
     }
 
@@ -96,11 +100,12 @@ public class DrugButtonBeanService {
      * @param selectionArgs
      * @return
      */
-    public DrugButtonBean query(String tableName, String[] columns, String selection, String[] selectionArgs) {
+    public  List<DrugButtonBean> query(String tableName, String[] columns, String selection, String[] selectionArgs) {
         database = mySqliteHelper.getReadableDatabase();
 //        Cursor cursor = database.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, columns, selection, selectionArgs, null, null, null);
         Cursor cursor = database.query(tableName, columns, selection, selectionArgs, null, null, null);
         DrugButtonBean drugButtonBean = null;
+        List<DrugButtonBean> drugButtonBeans  = new ArrayList<>();
         if (cursor.moveToFirst()) {//间数据的指针移到第一行
             do {//遍历所有的Cursor对象
                 String buttonName = cursor.getString(cursor.getColumnIndex(ParameterManager.BUTTONNAME));
@@ -137,11 +142,11 @@ public class DrugButtonBeanService {
                 if (rootJiao == null || rootJiao.equals(""))
                     return null;
                 drugButtonBean = new DrugButtonBean(buttonName, buttonValue, drugcoding, drugName, drugStyle, useStatus, currentAmo, maxAmount, valueDate, batch, rootJiao);
+                drugButtonBeans.add(drugButtonBean);
+
             } while (cursor.moveToNext());
         }
         cursor.close();
-        if (drugButtonBean!=null)
-        Log.e(TAG, "updata success !!!" +drugButtonBean.toString());
-        return drugButtonBean;
+        return drugButtonBeans;
     }
 }
