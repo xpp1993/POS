@@ -17,6 +17,8 @@ import com.lxkj.administrator.pos.service.SystemBeanService;
 import com.lxkj.administrator.pos.utils.AppUtils;
 import com.lxkj.administrator.pos.utils.MySqliteHelper;
 import com.lxkj.administrator.pos.utils.ParameterManager;
+import com.romainpiel.shimmer.Shimmer;
+import com.romainpiel.shimmer.ShimmerTextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,7 +33,8 @@ public class MainActivity extends AppCompatActivity  {
     private DrugButtonBeanService drugButtonBeanService;
     private LYGBeanService lygBeanService;
     private Calendar calendar;
-   /// private Button key_6;
+    ShimmerTextView tv;
+    Shimmer shimmer;
     private static final String TAG = MainActivity.class.getSimpleName();
     private AlertDialog.Builder builder_identity;
     private boolean isHasIdInLYGBEAN = false;
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity  {
         drugButtonBeanService = new DrugButtonBeanService(mySqliteHelper);
         lygBeanService = new LYGBeanService(mySqliteHelper);
         calendar = Calendar.getInstance();
-       // key_6 = (Button) findViewById(R.id.key_6);
+        tv = (ShimmerTextView) findViewById(R.id.shimmer_tv);
         //判断apk是否是第一次登录
         if (AppUtils.isFirstInstall()) {
             AppUtils.firstInstall();
@@ -121,6 +124,12 @@ public class MainActivity extends AppCompatActivity  {
                 .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (shimmer != null && shimmer.isAnimating()) {
+                            shimmer.cancel();
+                        } else {
+                            shimmer = new Shimmer();
+                            shimmer.start(tv);
+                        }
                         /**
                          * 刷身份证
                          */
