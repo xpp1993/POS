@@ -10,7 +10,8 @@ public class CreatTableSql {
      * 机号				地址	二级域名	端口		最小年龄	最大年龄	区编码
      */
     final static String SYSTEMBEAN_TABLE = "create table " + ParameterManager.TABLENAME_SYSTEMBEAN +
-            "(POSNUM varchar(50) NULL," +
+            "(PKID integer primary key autoincrement," +
+            "POSNUM varchar(50) NULL," +
             "ONECODE varchar(50) NULL," +
             "TWOCODE varchar(50) NULL," +
             "THREECODE varchar(50) NULL," +
@@ -26,7 +27,8 @@ public class CreatTableSql {
      * 键名	键号	药具代码	药具名称	药具类型	使用标志	当前数量	最大数量	有效期	批号	对应的控制角
      */
     final static String DRUGBUTTONCEAN_TABLE = "create table " + ParameterManager.TABLENAME_DRUGBUTTONBEAN +
-            "(BUTTONNAME varchar(50) ," +
+            "(PKID integer primary key autoincrement," +
+            "BUTTONNAME varchar(50) ," +
             "BUTTONVALU varchar(50) ," +
             "DRUGCODING varchar(50) ," +
             "DRUGNAME varchar(50) ," +
@@ -94,4 +96,25 @@ public class CreatTableSql {
             "DATE varchar(50) ," +
             "FLAG varchar(50) ," +
             "LIST varchar(50) );";
+    /**
+     * 创建领用记录表
+     */
+    final static String RECEIVEBEAN_TABLE = "create table " + ParameterManager.TABLENAME_RECEIVEBEAN +
+            "(IDENTITYNU varchar(50) ," +
+            "AMOUNT varchar(50) ," +
+            "CODING varchar(50) ," +
+            "STYLE varchar(50) ," +
+            "TIME varchar(50) ," +
+            "POSNUM varchar(50) ," +
+            "ONECODE varchar(50) ," +
+            "TWOCODE varchar(50) ," +
+            "THREECODE varchar(50) ," +
+            "PRICE varchar(50) ," +
+            "AREACODE varchar(50) ," +
+            "USERNAME varchar(50) ," +
+            "USERSEX varchar(50) ," +
+            "USERNATION varchar(50) ," +
+            "BORNDATE varchar(50) ," +
+            "PAPERWORKD varchar(50) ," +
+            "ADDRESS varchar(50) );";
 }

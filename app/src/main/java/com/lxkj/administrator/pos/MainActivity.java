@@ -2,7 +2,9 @@ package com.lxkj.administrator.pos;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,24 +12,27 @@ import android.view.KeyEvent;
 
 import com.lxkj.administrator.pos.bean.DrugButtonBean;
 import com.lxkj.administrator.pos.bean.LYGBean;
+import com.lxkj.administrator.pos.bean.ReceiveBean;
 import com.lxkj.administrator.pos.bean.SystemBean;
 import com.lxkj.administrator.pos.service.DrugButtonBeanService;
 import com.lxkj.administrator.pos.service.LYGBeanService;
 import com.lxkj.administrator.pos.service.SystemBeanService;
 import com.lxkj.administrator.pos.utils.AppUtils;
+import com.lxkj.administrator.pos.utils.CommonTools;
+import com.lxkj.administrator.pos.utils.MyAsyncTask;
 import com.lxkj.administrator.pos.utils.MySqliteHelper;
 import com.lxkj.administrator.pos.utils.ParameterManager;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
     private MySqliteHelper mySqliteHelper;
     private SystemBeanService systemBeanService;
     private DrugButtonBeanService drugButtonBeanService;
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity  {
     private boolean isHasIdInLYGBEAN = false;
     private boolean isHasIdInMLYGBEAN = false;
     private boolean isHasIdInBLACKBEAN = false;
+    private ConnectivityManager mCM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,7 @@ public class MainActivity extends AppCompatActivity  {
         lygBeanService = new LYGBeanService(mySqliteHelper);
         calendar = Calendar.getInstance();
         tv = (ShimmerTextView) findViewById(R.id.shimmer_tv);
+        mCM = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         //判断apk是否是第一次登录
         if (AppUtils.isFirstInstall()) {
             AppUtils.firstInstall();
@@ -203,6 +210,8 @@ public class MainActivity extends AppCompatActivity  {
         } else {
             isHasIdInLYGBEAN = false;
         }
+        //暂时上传数据到服务器
+        MainActivity.this.ReceiveBean("440302197507140016", "1", "风油精", "外用", "2016-07-01 09:39:45", "1", "1", "0", "01", "1", "1", "MIKE", "nan", "han", "19750714", "20320419", "广州市越秀区惠福东路535号");
     }
 
     private void showDialog(String str) {
@@ -212,7 +221,7 @@ public class MainActivity extends AppCompatActivity  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 //                        builder_identity.show();//显示请刷身份证领取药具
-                       // pos(" ");
+                        // pos(" ");
                     }
                 })
                 .setCancelable(false)
@@ -224,7 +233,6 @@ public class MainActivity extends AppCompatActivity  {
      * 初始化表格数据
      */
     private void initTable() {
-        //SystemBean systemBean = new SystemBean("1", "0", "0", "01", "4", "120.24.86.194", "5009", "20151012", "15", "65", "1");
         //初始化系统设置表
         SystemBean systemBean = new SystemBean(ParameterManager.SYSTEMBEAN_POSNUM_VALUE, ParameterManager.SYSTEMBEAN_ONECODE_VALUE,
                 ParameterManager.SYSTEMBEAN_TWOCODE_VALUE, ParameterManager.SYSTEMBEAN_THREECODE_VALUE,
@@ -259,17 +267,9 @@ public class MainActivity extends AppCompatActivity  {
         values = drugButtonBeanService.putContentValues(drugButtonBean);
         drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, values);
 
-        LYGBean lygBean = new LYGBean("362302197507140016", "2016-03-01", "1", "0");
-        values = lygBeanService.putContentValues(lygBean);
-        lygBeanService.insert(ParameterManager.TABLENAME_LYGBEAN, values);
-
-        lygBean = new LYGBean("36068119950108901X", "2016-07-28", "1", "0");
-        values = lygBeanService.putContentValues(lygBean);
-        lygBeanService.insert(ParameterManager.TABLENAME_LYGBEAN, values);
-
-        lygBean = new LYGBean("360121199304201427", "2016-11-21", "1", "0");
-        values = lygBeanService.putContentValues(lygBean);
-        lygBeanService.insert(ParameterManager.TABLENAME_LYGBEAN, values);
+        insertLYGBean("362302197507140016", "2016-03-01", "1", "0");
+        insertLYGBean("36068119950108901X", "2016-07-28", "1", "0");
+        insertLYGBean("360121199304201427", "2016-11-21", "1", "0");
     }
 
 
@@ -307,8 +307,51 @@ public class MainActivity extends AppCompatActivity  {
         }
         return age;
     }
-    //    static {
-//        System.loadLibrary("libhy_gpio_jni");
-//        System.loadLibrary("libhy_uart_jni");
-//    }
+
+    /**
+     * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
+     *
+     * @param BUTTONVALU 键值 对应通道
+     */
+    private void changeDrugButtonBeanMAX(String BUTTONVALU) {
+        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+    }
+
+    /**
+     * 写LYGBean
+     */
+    private void insertLYGBean(String ID, String date, String flag, String List) {
+        LYGBean lygBean = new LYGBean(ID, date, flag, List);
+        ContentValues values = lygBeanService.putContentValues(lygBean);
+        lygBeanService.insert(ParameterManager.TABLENAME_LYGBEAN, values);
+    }
+
+    /**
+     * 写ReceiveBean
+     */
+    public void ReceiveBean(String IDENTITYNU, String AMOUNT, String CODING, String STYLE, String TIME, String POSNUM,
+                            String ONECODE, String TWOCODE, String THREECODE, String PRICE, String AREACODE,
+                            String USERNAME, String USERSEX, String USERNATION, String BORNDATE, String PAPERWORKD, String ADDRESS) {
+        ReceiveBean receiveBean = new ReceiveBean(IDENTITYNU, AMOUNT, CODING, STYLE, TIME, POSNUM, ONECODE, TWOCODE, THREECODE, PRICE, AREACODE, USERNAME, USERSEX, USERNATION, BORNDATE, PAPERWORKD, ADDRESS);
+        ContentValues values = drugButtonBeanService.putContentValuesforReceive(receiveBean);
+        drugButtonBeanService.insert(ParameterManager.TABLENAME_RECEIVEBEAN, values);
+        //打开GPRS
+        CommonTools.gprsEnabled(true, mCM);
+        //通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
+        uploadData(receiveBean);
+    }
+
+    /**
+     * 通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
+     */
+    public void uploadData(ReceiveBean receiveBean) {
+        String[] keys = new String[]{"Key", "IDENTITYNU", "AMOUNT", "CODING", "STYLE", "TIME", "POSNUM", "ONECODE", "TWOCODE", "THREECODE", "PRICE", "AREACODE",
+                "USERNAME", "USERSEX", "USERNATION", "BORNDATE", "PAPERWORKD", "ADDRESS"};
+        Map<String, Object> requestParamsMap = CommonTools.getParameterMap(keys, ParameterManager.KEY, receiveBean.getIDENTITYNU(), receiveBean.getAMOUNT(), receiveBean.getCODING(),
+                receiveBean.getSTYLE(), receiveBean.getTIME(), receiveBean.getPOSNUM(), receiveBean.getONECODE(), receiveBean.getTWOCODE(), receiveBean.getTHREECODE(), receiveBean.getPRICE(),
+                receiveBean.getAREACODE(), receiveBean.getUSERNAM(), receiveBean.getUSERSEX(), receiveBean.getUSERNATION(), receiveBean.getBORNDATE(), receiveBean.getPAPERWORKD(), receiveBean.getADDRESS());
+        new MyAsyncTask(requestParamsMap).execute();
+    }
+
 }

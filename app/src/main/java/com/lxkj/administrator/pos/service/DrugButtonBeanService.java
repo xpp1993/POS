@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.lxkj.administrator.pos.bean.DrugButtonBean;
+import com.lxkj.administrator.pos.bean.ReceiveBean;
 import com.lxkj.administrator.pos.utils.MySqliteHelper;
 import com.lxkj.administrator.pos.utils.ParameterManager;
 
@@ -49,6 +50,30 @@ public class DrugButtonBeanService {
     }
 
     /**
+     * 插入数据用到的方法
+     */
+    public ContentValues putContentValuesforReceive(ReceiveBean receiveBean) {
+        values.put("IDENTITYNU", receiveBean.getIDENTITYNU());
+        values.put("AMOUNT", receiveBean.getAMOUNT());
+        values.put("CODING", receiveBean.getCODING());
+        values.put("STYLE", receiveBean.getSTYLE());
+        values.put("TIME", receiveBean.getTIME());
+        values.put("POSNUM", receiveBean.getPOSNUM());
+        values.put("ONECODE", receiveBean.getONECODE());
+        values.put("TWOCODE", receiveBean.getTWOCODE());
+        values.put("THREECODE", receiveBean.getTHREECODE());
+        values.put("PRICE", receiveBean.getPRICE());
+        values.put("AREACODE", receiveBean.getAREACODE());
+        values.put("USERNAME", receiveBean.getUSERNAM());
+        values.put("USERSEX", receiveBean.getUSERSEX());
+        values.put("USERNATION", receiveBean.getUSERNATION());
+        values.put("BORNDATE", receiveBean.getBORNDATE());
+        values.put("PAPERWORKD", receiveBean.getPAPERWORKD());
+        values.put("ADDRESS", receiveBean.getADDRESS());
+        return values;
+    }
+
+    /**
      * 添加数据
      *
      * @param values ContentValues values
@@ -57,8 +82,14 @@ public class DrugButtonBeanService {
         database = mySqliteHelper.getReadableDatabase();
         database.insert(tableName, null, values);
         values.clear();
-        if (query(tableName,null,null,null).toString()!=null)
-        Log.e(TAG, "insert success !!!"+query(tableName,null,null,null).toString());
+        if (ParameterManager.TABLENAME_DRUGBUTTONBEAN.equals(tableName)) {
+            if (query(tableName, null, null, null).toString() != null)
+            Log.e(TAG, "insert success !!!" + query(tableName, null, null, null).toString());
+        }else if (ParameterManager.TABLENAME_RECEIVEBEAN.equals(tableName)){
+            if (queryReceiveBeans(tableName, null, null, null) != null){
+                Log.e(TAG, "insert success" + queryReceiveBeans(tableName, null, null, null).toString());
+            }
+        }
     }
 
     /**
@@ -75,8 +106,14 @@ public class DrugButtonBeanService {
 //        database.update(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values, selection, selectionArgs);
         database.update(tableName, values, selection, selectionArgs);
         values.clear();
-        if (query(tableName, null, selection, selectionArgs).toString()!=null)
-        Log.e(TAG, "updata success !!!" + query(tableName, null, selection, selectionArgs).toString());
+        if (query(tableName, null, selection, selectionArgs).toString() != null) {
+            if (ParameterManager.TABLENAME_DRUGBUTTONBEAN.equals(tableName))
+                Log.e(TAG, "updata success !!!" + query(tableName, null, selection, selectionArgs).toString());
+            else if (ParameterManager.TABLENAME_RECEIVEBEAN.equals(tableName)) {
+                Log.e(TAG, "updata success !!!" + queryReceiveBeans(tableName, null, selection, selectionArgs).toString());
+            }
+        }
+
     }
 
     /**
@@ -100,12 +137,12 @@ public class DrugButtonBeanService {
      * @param selectionArgs
      * @return
      */
-    public  List<DrugButtonBean> query(String tableName, String[] columns, String selection, String[] selectionArgs) {
+    public List<DrugButtonBean> query(String tableName, String[] columns, String selection, String[] selectionArgs) {
         database = mySqliteHelper.getReadableDatabase();
 //        Cursor cursor = database.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, columns, selection, selectionArgs, null, null, null);
         Cursor cursor = database.query(tableName, columns, selection, selectionArgs, null, null, null);
         DrugButtonBean drugButtonBean = null;
-        List<DrugButtonBean> drugButtonBeans  = new ArrayList<>();
+        List<DrugButtonBean> drugButtonBeans = new ArrayList<>();
         if (cursor.moveToFirst()) {//间数据的指针移到第一行
             do {//遍历所有的Cursor对象
                 String buttonName = cursor.getString(cursor.getColumnIndex(ParameterManager.BUTTONNAME));
@@ -148,5 +185,46 @@ public class DrugButtonBeanService {
         }
         cursor.close();
         return drugButtonBeans;
+    }
+
+    /**
+     * 查询数据
+     *
+     * @param columns
+     * @param selection
+     * @param selectionArgs
+     * @return
+     */
+    public List<ReceiveBean> queryReceiveBeans(String tableName, String[] columns, String selection, String[] selectionArgs) {
+        database = mySqliteHelper.getReadableDatabase();
+        Cursor cursor = database.query(tableName, columns, selection, selectionArgs, null, null, null);
+        ReceiveBean receiveBean = null;
+        List<ReceiveBean> receiveBeans = new ArrayList<>();
+        if (cursor.moveToFirst()) {//间数据的指针移到第一行
+            do {//遍历所有的Cursor对象
+                String IDENTITYNU = cursor.getString(cursor.getColumnIndex("IDENTITYNU"));
+                String AMOUNT = cursor.getString(cursor.getColumnIndex("AMOUNT"));
+                String CODING = cursor.getString(cursor.getColumnIndex("CODING"));
+                String STYLE = cursor.getString(cursor.getColumnIndex("STYLE"));
+                String TIME = cursor.getString(cursor.getColumnIndex("TIME"));
+                String POSNUM = cursor.getString(cursor.getColumnIndex("POSNUM"));
+                String ONECODE = cursor.getString(cursor.getColumnIndex("ONECODE"));
+                String TWOCODE = cursor.getString(cursor.getColumnIndex("TWOCODE"));
+                String THREECODE = cursor.getString(cursor.getColumnIndex("THREECODE"));
+                String PRICE = cursor.getString(cursor.getColumnIndex("PRICE"));
+                String AREACODE = cursor.getString(cursor.getColumnIndex("AREACODE"));
+                String USERNAME = cursor.getString(cursor.getColumnIndex("USERNAME"));
+                String USERSEX = cursor.getString(cursor.getColumnIndex("USERSEX"));
+                String USERNATION = cursor.getString(cursor.getColumnIndex("USERNATION"));
+                String BORNDATE = cursor.getString(cursor.getColumnIndex("BORNDATE"));
+                String PAPERWORKD = cursor.getString(cursor.getColumnIndex("PAPERWORKD"));
+                String ADDRESS = cursor.getString(cursor.getColumnIndex("ADDRESS"));
+                receiveBean = new ReceiveBean(IDENTITYNU, AMOUNT, CODING, STYLE, TIME, POSNUM, ONECODE, TWOCODE, THREECODE, PRICE, AREACODE, USERNAME, USERSEX, USERNATION, BORNDATE, PAPERWORKD, ADDRESS);
+                receiveBeans.add(receiveBean);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return receiveBeans;
     }
 }

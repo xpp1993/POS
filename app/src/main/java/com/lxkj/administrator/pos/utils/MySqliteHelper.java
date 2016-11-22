@@ -25,6 +25,7 @@ public class MySqliteHelper extends SQLiteOpenHelper {
         db.execSQL(CreatTableSql.LYGBEAN_TABLE); //本月本机器上领用情况
         db.execSQL(CreatTableSql.MLYGBEAN_TABLE);  //本月所有机器上领用情况
         db.execSQL(CreatTableSql.BLACKBEAN_TABLE);  //黑名单表
+        db.execSQL(CreatTableSql.RECEIVEBEAN_TABLE);//领用记录表
     }
 
     @Override
