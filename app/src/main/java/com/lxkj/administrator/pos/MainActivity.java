@@ -1,7 +1,6 @@
 package com.lxkj.administrator.pos;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
@@ -19,18 +18,13 @@ import com.lxkj.administrator.pos.service.LYGBeanService;
 import com.lxkj.administrator.pos.service.SystemBeanService;
 import com.lxkj.administrator.pos.utils.AppUtils;
 import com.lxkj.administrator.pos.utils.CommonTools;
-import com.lxkj.administrator.pos.utils.MyAsyncTask;
 import com.lxkj.administrator.pos.utils.MySqliteHelper;
 import com.lxkj.administrator.pos.utils.ParameterManager;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private MySqliteHelper mySqliteHelper;
@@ -80,45 +74,38 @@ public class MainActivity extends AppCompatActivity {
                 drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN, drugButtonBeanService.putContentValues(drugButtonBean));
             }
         }
-        //  if (systemBean != null && drugButtonBean != null) {
         //2.判断LYGBean表中数据是否当前月份
-        String[] dateStr;
         List<LYGBean> lygBeans = lygBeanService.query(ParameterManager.TABLENAME_LYGBEAN, null, null, null);
-        if (lygBeans != null) {
-            for (LYGBean lygBean : lygBeans) {
-                dateStr = lygBean.getDate().split("-");
-                if (!dateStr[1].equals(calendar.get(Calendar.DAY_OF_MONTH))) {//如果不是当前月份，清空LYBean表中数据
-                    // lygBeanService.delect(ParameterManager.TABLENAME_LYGBEAN, null, null);
-                    lygBeanService.delect(ParameterManager.TABLENAME_LYGBEAN, "DATE = ?", new String[]{dateStr[1]});
-                }
-            }
-        }
+        isJugde(lygBeans, ParameterManager.TABLENAME_LYGBEAN, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
         //3.判断MLYGBean表中数据是否当前月份
         lygBeans = lygBeanService.query(ParameterManager.TABLENAME_MLYGBEAN, null, null, null);//LYGBean，MLYGBean,BlackBean,表结构一样，共用一个lygBeanServic和 lygBean
-        if (lygBeans != null) {
-            for (LYGBean lygBean : lygBeans) {
-                dateStr = lygBean.getDate().split("-");
-                if (!dateStr[1].equals(calendar.get(Calendar.DAY_OF_MONTH))) {//如果不是当前月份，清空MLYBean表中数据
-//                    lygBeanService.delect(ParameterManager.TABLENAME_MLYGBEAN, null, null);
-                    lygBeanService.delect(ParameterManager.TABLENAME_MLYGBEAN, "DATE = ?", new String[]{dateStr[1]});
-                }
-            }
-        }
-        //4.判断BlackBean表中数据是否当前月份
+        isJugde(lygBeans, ParameterManager.TABLENAME_MLYGBEAN, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+        //4.判断BlackBean表中数据是否当前年份
         lygBeans = lygBeanService.query(ParameterManager.TABLENAME_BLACKBEAN, null, null, null);//LYGBean，MLYGBean,BlackBean,表结构一样，共用一个lygBeanServic和 lygBean
-        if (lygBeans != null) {
-            for (LYGBean lygBean : lygBeans) {
-                dateStr = lygBean.getDate().split("-");
-                if (!dateStr[1].equals(calendar.get(Calendar.DAY_OF_YEAR))) {//如果不是当前年份，清空BlackBean表中数据
-//                    lygBeanService.delect(ParameterManager.TABLENAME_BLACKBEAN, null, null);
-                    lygBeanService.delect(ParameterManager.TABLENAME_BLACKBEAN, "DATE = ?", new String[]{dateStr[1]});
-                }
-            }
-        }
+        isJugde(lygBeans, ParameterManager.TABLENAME_BLACKBEAN, String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)));
         //5.显示：请刷身份证领取药具
         showIdDialog();
+    }
 
-        // }
+    /**
+     * 判断 LYGBean表中数据是否当前月份
+     * 判断MLYGBean表中数据是否当前月份
+     * 判断BlackBean表中数据是否当前年份
+     * @param lygBeans
+     * @param tableName
+     * @param args
+     */
+    private void isJugde(List<LYGBean> lygBeans, String tableName, String args) {
+        String[] dateStr;
+        if (lygBeans != null) {
+            for (LYGBean lygBean : lygBeans) {
+                dateStr = lygBean.getDate().split("-");
+                if (!dateStr[1].equals(args)) {//如果不是当前月份，清空LYBean表中数据
+                    // lygBeanService.delect(ParameterManager.TABLENAME_LYGBEAN, null, null);
+                    lygBeanService.delect(tableName, "DATE = ?", new String[]{dateStr[1]});
+                }
+            }
+        }
     }
 
     /**
@@ -154,19 +141,15 @@ public class MainActivity extends AppCompatActivity {
      * 刷身份证
      */
     private void pos(String id) {
-        //6.监听按键6,按6把DrugButtonBean中的Max的值复制到该条记录的CURRENTAMO中，屏幕显示：恢复最大数量成功！
-//        key_6.setOnClickListener(MainActivity.this);
         //7.打开串口，等待获取身份证信息，获取到信息后，关闭串口
         //8.根据身份证号和当前手机时间判断年龄是否15至65之间
-        //String id = "360121199304201427";
-        int age = MainActivity.this.getAgeforIdCard(id);
+        int age = CommonTools.getAgeforIdCard(id);
         Log.e(TAG, age + "岁");
         if (age < 15 || age > 65) {//显示你不符合领取条件
             showDialog(getResources().getString(R.string.show1));
         } else {
             ifTrueAge(id);
         }
-
     }
 
     /**
@@ -191,27 +174,30 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         }
-                        if (!isHasIdInBLACKBEAN) {
-                            showDialog(getResources().getString(R.string.show4));
-                        } else {
-                            isHasIdInBLACKBEAN = false;
-                        }
+                        trueOrfalse(isHasIdInBLACKBEAN, getResources().getString(R.string.show4));
                     }
                 }
-                if (!isHasIdInMLYGBEAN) {
-                    showDialog(getResources().getString(R.string.show3));
-                } else {
-                    isHasIdInMLYGBEAN = false;
-                }
+                trueOrfalse(isHasIdInMLYGBEAN, getResources().getString(R.string.show3));
             }
         }
-        if (!isHasIdInLYGBEAN) {
-            showDialog(getResources().getString(R.string.show2));
-        } else {
-            isHasIdInLYGBEAN = false;
-        }
+        trueOrfalse(isHasIdInLYGBEAN, getResources().getString(R.string.show2));
         //暂时上传数据到服务器
-        MainActivity.this.ReceiveBean("440302197507140016", "1", "风油精", "外用", "2016-07-01 09:39:45", "1", "1", "0", "01", "1", "1", "MIKE", "nan", "han", "19750714", "20320419", "广州市越秀区惠福东路535号");
+        ReceiveBean receiveBean = CommonTools.ReceiveBean(drugButtonBeanService, "440302197507140016", "1", "风油精", "外用", "2016-07-01 09:39:45", "1", "1", "0", "01", "1", "1", "MIKE", "nan", "han", "19750714", "20320419", "广州市越秀区惠福东路535号");
+        //打开GPRS
+        CommonTools.gprsEnabled(true, mCM);
+        //通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
+        CommonTools.uploadData(receiveBean);
+    }
+
+    /**
+     * 是否在表中,如果不在表中弹出对话框
+     */
+    private void trueOrfalse(boolean trueOrfalse, String showWhat) {
+        if (!trueOrfalse) {
+            showDialog(showWhat);
+        } else {
+            trueOrfalse = false;
+        }
     }
 
     private void showDialog(String str) {
@@ -234,45 +220,25 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initTable() {
         //初始化系统设置表
-        SystemBean systemBean = new SystemBean(ParameterManager.SYSTEMBEAN_POSNUM_VALUE, ParameterManager.SYSTEMBEAN_ONECODE_VALUE,
-                ParameterManager.SYSTEMBEAN_TWOCODE_VALUE, ParameterManager.SYSTEMBEAN_THREECODE_VALUE,
-                ParameterManager.SYSTEMBEAN_ADDRESS_VALUE, ParameterManager.SYSTEMBEAN_IP_VALUE,
-                ParameterManager.SYSTEMBEAN_PORT_VALUE, ParameterManager.SYSTEMBEAN_DATE_VALUE,
-                ParameterManager.SYSTEMBEAN_Min_VALUE, ParameterManager.SYSTEMBEAN_Max_VALUE,
-                ParameterManager.SYSTEMBEAN_AREACODE_VALUE);
-        systemBeanService.insert(ParameterManager.TABLENAME_SYSTEMBEAN, systemBean);
-        systemBeanService.insert(ParameterManager.TABLENAME_SYSTEMBEAN_DUPLICATEFILE, systemBean);
+        CommonTools.initSystemBean(systemBeanService);
 
-        DrugButtonBean drugButtonBean = new DrugButtonBean("1 键", "1", "藿香正气丸", "藿香正气丸", "内服", "1", "19", "25", "2013-11-11", "1.0", "1");
-        ContentValues values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values);
-        values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, values);
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN, "1 键", "1", "藿香正气丸", "藿香正气丸", "内服", "1", "19", "25", "2013-11-11", "1.0", "1");
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, "1 键", "1", "藿香正气丸", "藿香正气丸", "内服", "1", "19", "25", "2013-11-11", "1.0", "1");
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN, "2 键", "2", "藿香正气丸", "藿香正气丸", "内服", "1", "25", "25", "2013-11-11", "1.0", "2");
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, "2 键", "2", "藿香正气丸", "藿香正气丸", "内服", "1", "25", "25", "2013-11-11", "1.0", "2");
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN, "3 键", "3", "风油精", "风油精", "外用", "1", "25", "25", "2013-11-11", "1.0", "3");
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, "3 键", "3", "风油精", "风油精", "外用", "1", "25", "25", "2013-11-11", "1.0", "3");
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN, "4 键", "4", "清凉油", "清凉油", "外用", "1", "25", "25", "2013-11-11", "1.0", "0");
+        CommonTools.insertDrugButtonBean(drugButtonBeanService, ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, "4 键", "4", "清凉油", "清凉油", "外用", "1", "25", "25", "2013-11-11", "1.0", "0");
 
-        drugButtonBean = new DrugButtonBean("2 键", "2", "藿香正气丸", "藿香正气丸", "内服", "1", "25", "25", "2013-11-11", "1.0", "2");
-        values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values);
-        values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, values);
-
-        drugButtonBean = new DrugButtonBean("3 键", "3", "风油精", "风油精", "外用", "1", "25", "25", "2013-11-11", "1.0", "3");
-        values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values);
-        values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, values);
-
-        drugButtonBean = new DrugButtonBean("4 键", "4", "清凉油", "清凉油", "外用", "1", "25", "25", "2013-11-11", "1.0", "0");
-        values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN, values);
-        values = drugButtonBeanService.putContentValues(drugButtonBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_DRUGBUTTONBEAN_DUPLICATEFILE, values);
-
-        insertLYGBean("362302197507140016", "2016-03-01", "1", "0");
-        insertLYGBean("36068119950108901X", "2016-07-28", "1", "0");
-        insertLYGBean("360121199304201427", "2016-11-21", "1", "0");
+        CommonTools.insertLYGBean(lygBeanService, ParameterManager.TABLENAME_LYGBEAN, "362302197507140016", "2016-03-01", "1", "0");
+        CommonTools.insertLYGBean(lygBeanService, ParameterManager.TABLENAME_LYGBEAN, "36068119950108901X", "2016-07-28", "1", "0");
+        CommonTools.insertLYGBean(lygBeanService, ParameterManager.TABLENAME_LYGBEAN, "360121199304201427", "2016-11-21", "1", "0");
     }
 
-
+    /**
+     * 6.监听按键6,按6把DrugButtonBean中的Max的值复制到该条记录的CURRENTAMO中，屏幕显示：恢复最大数量成功！
+     */
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == event.KEYCODE_6 || keyCode == event.KEYCODE_NUMPAD_6) {
@@ -284,74 +250,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
         return super.onKeyUp(keyCode, event);
-    }
-
-    /**
-     * 根据身份证计算年龄
-     */
-    private int getAgeforIdCard(String idcard) {
-        // 获取出生日期
-        String birthday = idcard.substring(6, 14);
-        Date birthdate = null;
-        int age = 0;
-        try {
-            birthdate = new SimpleDateFormat("yyyyMMdd").parse(birthday);
-            GregorianCalendar currentDay = new GregorianCalendar();
-            currentDay.setTime(birthdate);
-            //获取年龄
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
-            String year = simpleDateFormat.format(new Date());
-            age = Integer.parseInt(year) - currentDay.get(Calendar.YEAR);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return age;
-    }
-
-    /**
-     * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
-     *
-     * @param BUTTONVALU 键值 对应通道
-     */
-    private void changeDrugButtonBeanMAX(String BUTTONVALU) {
-        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
-        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
-    }
-
-    /**
-     * 写LYGBean
-     */
-    private void insertLYGBean(String ID, String date, String flag, String List) {
-        LYGBean lygBean = new LYGBean(ID, date, flag, List);
-        ContentValues values = lygBeanService.putContentValues(lygBean);
-        lygBeanService.insert(ParameterManager.TABLENAME_LYGBEAN, values);
-    }
-
-    /**
-     * 写ReceiveBean
-     */
-    public void ReceiveBean(String IDENTITYNU, String AMOUNT, String CODING, String STYLE, String TIME, String POSNUM,
-                            String ONECODE, String TWOCODE, String THREECODE, String PRICE, String AREACODE,
-                            String USERNAME, String USERSEX, String USERNATION, String BORNDATE, String PAPERWORKD, String ADDRESS) {
-        ReceiveBean receiveBean = new ReceiveBean(IDENTITYNU, AMOUNT, CODING, STYLE, TIME, POSNUM, ONECODE, TWOCODE, THREECODE, PRICE, AREACODE, USERNAME, USERSEX, USERNATION, BORNDATE, PAPERWORKD, ADDRESS);
-        ContentValues values = drugButtonBeanService.putContentValuesforReceive(receiveBean);
-        drugButtonBeanService.insert(ParameterManager.TABLENAME_RECEIVEBEAN, values);
-        //打开GPRS
-        CommonTools.gprsEnabled(true, mCM);
-        //通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
-        uploadData(receiveBean);
-    }
-
-    /**
-     * 通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
-     */
-    public void uploadData(ReceiveBean receiveBean) {
-        String[] keys = new String[]{"Key", "IDENTITYNU", "AMOUNT", "CODING", "STYLE", "TIME", "POSNUM", "ONECODE", "TWOCODE", "THREECODE", "PRICE", "AREACODE",
-                "USERNAME", "USERSEX", "USERNATION", "BORNDATE", "PAPERWORKD", "ADDRESS"};
-        Map<String, Object> requestParamsMap = CommonTools.getParameterMap(keys, ParameterManager.KEY, receiveBean.getIDENTITYNU(), receiveBean.getAMOUNT(), receiveBean.getCODING(),
-                receiveBean.getSTYLE(), receiveBean.getTIME(), receiveBean.getPOSNUM(), receiveBean.getONECODE(), receiveBean.getTWOCODE(), receiveBean.getTHREECODE(), receiveBean.getPRICE(),
-                receiveBean.getAREACODE(), receiveBean.getUSERNAM(), receiveBean.getUSERSEX(), receiveBean.getUSERNATION(), receiveBean.getBORNDATE(), receiveBean.getPAPERWORKD(), receiveBean.getADDRESS());
-        new MyAsyncTask(requestParamsMap).execute();
     }
 
 }

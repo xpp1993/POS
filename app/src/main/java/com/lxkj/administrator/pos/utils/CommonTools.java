@@ -1,7 +1,16 @@
 package com.lxkj.administrator.pos.utils;
 
+import android.content.ContentValues;
 import android.net.ConnectivityManager;
 import android.util.Log;
+
+import com.lxkj.administrator.pos.bean.DrugButtonBean;
+import com.lxkj.administrator.pos.bean.LYGBean;
+import com.lxkj.administrator.pos.bean.ReceiveBean;
+import com.lxkj.administrator.pos.bean.SystemBean;
+import com.lxkj.administrator.pos.service.DrugButtonBeanService;
+import com.lxkj.administrator.pos.service.LYGBeanService;
+import com.lxkj.administrator.pos.service.SystemBeanService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,9 +20,15 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 /**
  * Created by Administrator on 2016/11/22.
  */
@@ -85,9 +100,100 @@ public class CommonTools {
     }
 
     /**
+     * 插入数据到表DrugButtonBean
+     */
+    public static void insertDrugButtonBean(DrugButtonBeanService drugButtonBeanService, String tableName, String BUTTONNAME, String BUTTONVALU, String DRUGCODING, String DRUGNAME,
+                                            String DRUGSTYLE, String USESTATUS, String CURRENTAMO, String MAXAMOUNT,
+                                            String VALIDDATE, String BATCH, String ROOTJIAO) {
+        DrugButtonBean drugButtonBean = new DrugButtonBean(BUTTONNAME, BUTTONVALU, DRUGCODING, DRUGNAME, DRUGSTYLE, USESTATUS, CURRENTAMO,
+                MAXAMOUNT, VALIDDATE, BATCH, ROOTJIAO);
+        ContentValues values = drugButtonBeanService.putContentValues(drugButtonBean);
+        drugButtonBeanService.insert(tableName, values);
+    }
+
+    /**
+     * 写LYGBean
+     */
+    public static void insertLYGBean(LYGBeanService lygBeanService, String tableName, String ID, String date, String flag, String List) {
+        LYGBean lygBean = new LYGBean(ID, date, flag, List);
+        ContentValues values = lygBeanService.putContentValues(lygBean);
+        lygBeanService.insert(tableName, values);
+    }
+
+    /**
+     * 根据身份证计算年龄
+     */
+    public static int getAgeforIdCard(String idcard) {
+        // 获取出生日期
+        String birthday = idcard.substring(6, 14);
+        Date birthdate = null;
+        int age = 0;
+        try {
+            birthdate = new SimpleDateFormat("yyyyMMdd").parse(birthday);
+            GregorianCalendar currentDay = new GregorianCalendar();
+            currentDay.setTime(birthdate);
+            //获取年龄
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+            String year = simpleDateFormat.format(new Date());
+            age = Integer.parseInt(year) - currentDay.get(Calendar.YEAR);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return age;
+    }
+
+    /**
+     * 初始化系统设置表
+     */
+    public static void initSystemBean(SystemBeanService systemBeanService) {
+        SystemBean systemBean = new SystemBean(ParameterManager.SYSTEMBEAN_POSNUM_VALUE, ParameterManager.SYSTEMBEAN_ONECODE_VALUE,
+                ParameterManager.SYSTEMBEAN_TWOCODE_VALUE, ParameterManager.SYSTEMBEAN_THREECODE_VALUE,
+                ParameterManager.SYSTEMBEAN_ADDRESS_VALUE, ParameterManager.SYSTEMBEAN_IP_VALUE,
+                ParameterManager.SYSTEMBEAN_PORT_VALUE, ParameterManager.SYSTEMBEAN_DATE_VALUE,
+                ParameterManager.SYSTEMBEAN_Min_VALUE, ParameterManager.SYSTEMBEAN_Max_VALUE,
+                ParameterManager.SYSTEMBEAN_AREACODE_VALUE);
+        systemBeanService.insert(ParameterManager.TABLENAME_SYSTEMBEAN, systemBean);
+        systemBeanService.insert(ParameterManager.TABLENAME_SYSTEMBEAN_DUPLICATEFILE, systemBean);
+    }
+
+    /**
+     * 写ReceiveBean
+     */
+    public static ReceiveBean ReceiveBean(DrugButtonBeanService drugButtonBeanService, String IDENTITYNU, String AMOUNT, String CODING, String STYLE, String TIME, String POSNUM,
+                                          String ONECODE, String TWOCODE, String THREECODE, String PRICE, String AREACODE,
+                                          String USERNAME, String USERSEX, String USERNATION, String BORNDATE, String PAPERWORKD, String ADDRESS) {
+        ReceiveBean receiveBean = new ReceiveBean(IDENTITYNU, AMOUNT, CODING, STYLE, TIME, POSNUM, ONECODE, TWOCODE, THREECODE, PRICE, AREACODE, USERNAME, USERSEX, USERNATION, BORNDATE, PAPERWORKD, ADDRESS);
+        ContentValues values = drugButtonBeanService.putContentValuesforReceive(receiveBean);
+        drugButtonBeanService.insert(ParameterManager.TABLENAME_RECEIVEBEAN, values);
+        return receiveBean;
+    }
+
+    /**
+     * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
+     *
+     * @param BUTTONVALU 键值 对应通道
+     */
+    private void changeDrugButtonBeanMAX(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
+        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+    }
+
+    /**
+     * 通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
+     */
+    public static void uploadData(ReceiveBean receiveBean) {
+        String[] keys = new String[]{"Key", "IDENTITYNU", "AMOUNT", "CODING", "STYLE", "TIME", "POSNUM", "ONECODE", "TWOCODE", "THREECODE", "PRICE", "AREACODE",
+                "USERNAME", "USERSEX", "USERNATION", "BORNDATE", "PAPERWORKD", "ADDRESS"};
+        Map<String, Object> requestParamsMap = CommonTools.getParameterMap(keys, ParameterManager.KEY, receiveBean.getIDENTITYNU(), receiveBean.getAMOUNT(), receiveBean.getCODING(),
+                receiveBean.getSTYLE(), receiveBean.getTIME(), receiveBean.getPOSNUM(), receiveBean.getONECODE(), receiveBean.getTWOCODE(), receiveBean.getTHREECODE(), receiveBean.getPRICE(),
+                receiveBean.getAREACODE(), receiveBean.getUSERNAM(), receiveBean.getUSERSEX(), receiveBean.getUSERNATION(), receiveBean.getBORNDATE(), receiveBean.getPAPERWORKD(), receiveBean.getADDRESS());
+        new MyAsyncTask(requestParamsMap).execute();
+    }
+
+    /**
      * POST请求获取数据
      */
-    public static boolean postDown(String requestUrl, Map<String, Object> requestParamsMap) {
+    public static String postDown(String requestUrl, Map<String, Object> requestParamsMap) {
         PrintWriter printWriter = null;
         StringBuffer params = new StringBuffer();
         HttpURLConnection httpURLConnection = null;
@@ -137,8 +243,7 @@ public class CommonTools {
                         sb.append(readLine).append("\n");
                     }
                     responseReader.close();
-                    System.out.println(sb.toString());
-                    return true;
+                    return sb.toString();
                 }
             }
         } catch (Exception e) {
@@ -156,6 +261,6 @@ public class CommonTools {
                 e.printStackTrace();
             }
         }
-        return false;
+        return null;
     }
 }
