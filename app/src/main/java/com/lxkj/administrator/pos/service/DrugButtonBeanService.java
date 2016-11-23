@@ -145,6 +145,7 @@ public class DrugButtonBeanService {
         List<DrugButtonBean> drugButtonBeans = new ArrayList<>();
         if (cursor.moveToFirst()) {//间数据的指针移到第一行
             do {//遍历所有的Cursor对象
+                int PKID=cursor.getInt(cursor.getColumnIndex("PKID"));
                 String buttonName = cursor.getString(cursor.getColumnIndex(ParameterManager.BUTTONNAME));
                 if (buttonName == null || buttonName.equals(""))
                     return null;
@@ -178,7 +179,7 @@ public class DrugButtonBeanService {
                 String rootJiao = cursor.getString(cursor.getColumnIndex(ParameterManager.ROOTJIAO));
                 if (rootJiao == null || rootJiao.equals(""))
                     return null;
-                drugButtonBean = new DrugButtonBean(buttonName, buttonValue, drugcoding, drugName, drugStyle, useStatus, currentAmo, maxAmount, valueDate, batch, rootJiao);
+                drugButtonBean = new DrugButtonBean(buttonName, buttonValue, drugcoding, drugName, drugStyle, useStatus, currentAmo, maxAmount, valueDate, batch, rootJiao,PKID);
                 drugButtonBeans.add(drugButtonBean);
 
             } while (cursor.moveToNext());

@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -168,15 +169,15 @@ public class CommonTools {
         return receiveBean;
     }
 
-    /**
-     * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
-     *
-     * @param BUTTONVALU 键值 对应通道
-     */
-    private void changeDrugButtonBeanMAX(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
-        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
-        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
-    }
+//    /**
+//     * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
+//     *
+//     * @param BUTTONVALU 键值 对应通道
+//     */
+//    private void changeDrugButtonBeanMAX(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
+//        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+//        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+//    }
 
     /**
      * 通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
@@ -262,5 +263,51 @@ public class CommonTools {
             }
         }
         return null;
+    }
+    /**
+     * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
+     *
+     * @param BUTTONVALU 键值 对应通道
+     */
+    public static void changeDrugButtonBeanMAX(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
+        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
+    }
+    /**
+     * 把DrugButtonBean表对应的通道数量减1，并记录启动GPIO-1口的时间
+     * @param BUTTONVALU 键值 对应通道
+     */
+    public static void changeDrugButtonBeanCur(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
+        List<DrugButtonBean> drugButtonBeans=drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null, "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        for (DrugButtonBean drugButtonBean:drugButtonBeans) {
+            String curMount=	String.valueOf(Integer.parseInt(drugButtonBean.getCURRENTAMO())-1);
+            drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", curMount, "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        }
+
+    }
+    /**
+     * 把DrugButtonBean表对应的通道的详情
+     * @param BUTTONVALU 键值 对应通道
+     */
+    public static DrugButtonBean getDrugButtonBeanforBtn(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
+        List<DrugButtonBean> drugButtonBeans=	drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null,  "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        return drugButtonBeans.get(0);
+    }
+    /**
+     * 记录系统当前时间
+     */
+    public static String recordTime(int flag){
+        String timeString=null;
+        Long timeLong=System.currentTimeMillis();
+        SimpleDateFormat sdf = null;
+        if (flag==0) {
+            sdf=new SimpleDateFormat("yyyy-MM-dd");
+        }else if (flag==1) {
+            sdf=new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+        }
+
+        timeString=sdf.format(new Date(timeLong));
+
+        return timeString;
     }
 }

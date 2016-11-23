@@ -16,7 +16,7 @@ public class DrugButtonBean {
     private String VALIDDATE;//有效期
     private String BATCH;//批号
     private String ROOTJIAO;//对应的控制角
-
+    private int PKID;
     public DrugButtonBean() {
     }
 
@@ -34,6 +34,31 @@ public class DrugButtonBean {
         this.VALIDDATE = VALIDDATE;
         this.BATCH = BATCH;
         this.ROOTJIAO = ROOTJIAO;
+    }
+
+    public DrugButtonBean(String BUTTONNAME, String BUTTONVALU, String DRUGCODING,
+                          String DRUGNAME, String DRUGSTYLE, String USESTATUS, String CURRENTAMO,
+                          String MAXAMOUNT, String VALIDDATE, String BATCH, String ROOTJIAO, int PKID) {
+        this.BUTTONNAME = BUTTONNAME;
+        this.BUTTONVALU = BUTTONVALU;
+        this.DRUGCODING = DRUGCODING;
+        this.DRUGNAME = DRUGNAME;
+        this.DRUGSTYLE = DRUGSTYLE;
+        this.USESTATUS = USESTATUS;
+        this.CURRENTAMO = CURRENTAMO;
+        this.MAXAMOUNT = MAXAMOUNT;
+        this.VALIDDATE = VALIDDATE;
+        this.BATCH = BATCH;
+        this.ROOTJIAO = ROOTJIAO;
+        this.PKID = PKID;
+    }
+
+    public int getPKID() {
+        return PKID;
+    }
+
+    public void setPKID(int PKID) {
+        this.PKID = PKID;
     }
 
     public String getBUTTONNAME() {
@@ -127,7 +152,7 @@ public class DrugButtonBean {
     @Override
     public String toString() {
         return "DrugButtonBean{" +
-                " BUTTONNAME='" + BUTTONNAME + '\'' +
+                "BUTTONNAME='" + BUTTONNAME + '\'' +
                 ", BUTTONVALU='" + BUTTONVALU + '\'' +
                 ", DRUGCODING='" + DRUGCODING + '\'' +
                 ", DRUGNAME='" + DRUGNAME + '\'' +
@@ -138,6 +163,7 @@ public class DrugButtonBean {
                 ", VALIDDATE='" + VALIDDATE + '\'' +
                 ", BATCH='" + BATCH + '\'' +
                 ", ROOTJIAO='" + ROOTJIAO + '\'' +
+                ", PKID=" + PKID +
                 '}';
     }
 }
