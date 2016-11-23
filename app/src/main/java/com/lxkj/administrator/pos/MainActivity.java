@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -12,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Window;
 
 import com.lxkj.administrator.pos.bean.DrugButtonBean;
 import com.lxkj.administrator.pos.bean.IdCardBean;
@@ -50,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
     private ConnectivityManager mCM;
     private SystemBean systemBean;
     private List<DrugButtonBean> drugButtonBeans;
+
     static {
         System.loadLibrary("hy_uart_jni");
     }
+
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -72,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // 隐藏标题栏
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         mySqliteHelper = new MySqliteHelper(this,
                 ParameterManager.DATABASENAME, null, 1);
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                     // lygBeanService.delect(ParameterManager.TABLENAME_LYGBEAN,
                     // null, null);
                     lygBeanService.delect(tableName, "DATE = ?",
-                            new String[] { dateStr[1] });
+                            new String[]{dateStr[1]});
                 }
             }
         }
@@ -202,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 如果年龄在15到65之间
-     *
      */
     private void ifTrueAge(IdCardBean idCardBean) {
         // 9 判断身份证号是否在LYGBean中
@@ -242,13 +241,13 @@ public class MainActivity extends AppCompatActivity {
         // "2016-07-01 09:39:45", "1", "1", "0", "01", "1", "1", "MIKE",
         // "nan", "han", "19750714", "20320419", "广州市越秀区惠福东路535号");
 
-        DrugButtonBean drugButtonBean=CommonTools.getDrugButtonBeanforBtn(drugButtonBeanService, "1");
-        CommonTools.insertLYGBean(lygBeanService, ParameterManager.TABLENAME_LYGBEAN,idCardBean.getIdCard(), "2016-07-01 09:39:45", "1", String.valueOf(drugButtonBean.getPKID()));
+        DrugButtonBean drugButtonBean = CommonTools.getDrugButtonBeanforBtn(drugButtonBeanService, "1");
+        CommonTools.insertLYGBean(lygBeanService, ParameterManager.TABLENAME_LYGBEAN, idCardBean.getIdCard(), "2016-07-01 09:39:45", "1", String.valueOf(drugButtonBean.getPKID()));
         ReceiveBean receiveBean = CommonTools.ReceiveBean(
                 drugButtonBeanService, idCardBean.getIdCard(), "1", drugButtonBean.getDRUGNAME(), drugButtonBean.getDRUGSTYLE(),
                 "2016-07-01 09:39:45", systemBean.getPOSNUM(), systemBean.getONECODE(), systemBean.getTWOCODE(), systemBean.getTHREECODE(),
-                "1.0", systemBean.getAREACODE(),idCardBean.getName(), idCardBean.getGender(),idCardBean.getNation(),
-                idCardBean.getBirthday(),idCardBean.getStartopTime(), idCardBean.getAddress());
+                "1.0", systemBean.getAREACODE(), idCardBean.getName(), idCardBean.getGender(), idCardBean.getNation(),
+                idCardBean.getBirthday(), idCardBean.getStartopTime(), idCardBean.getAddress());
         // 打开GPRS
         CommonTools.gprsEnabled(true, mCM);
         // 通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
