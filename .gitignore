@@ -5,3 +5,9 @@
 .DS_Store
 /build
 /captures
+app/build/
+gradle/
+gradle.properties
+gradlew
+gradlew.bat
+app/proguard-rules.pro
