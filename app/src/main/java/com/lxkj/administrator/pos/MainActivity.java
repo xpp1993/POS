@@ -180,8 +180,7 @@ public class MainActivity extends AppCompatActivity {
                          */
                         // pos("360121199304201427");
                     }
-                }).setNegativeButton("取消", null).setCancelable(false).create()
-                .show();
+                }).show();
     }
 
     /**
