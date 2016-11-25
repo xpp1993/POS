@@ -2,6 +2,7 @@ package com.lxkj.administrator.pos.utils;
 
 import android.content.ContentValues;
 import android.net.ConnectivityManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.lxkj.administrator.pos.bean.DrugButtonBean;
@@ -13,6 +14,7 @@ import com.lxkj.administrator.pos.service.LYGBeanService;
 import com.lxkj.administrator.pos.service.SystemBeanService;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -170,15 +172,34 @@ public class CommonTools {
         return receiveBean;
     }
 
-//    /**
-//     * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
-//     *
-//     * @param BUTTONVALU 键值 对应通道
-//     */
-//    private void changeDrugButtonBeanMAX(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
-//        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
-//        drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
-//    }
+    /**
+     * 获取进程号对应的进程名
+     *
+     * @param pid 进程号
+     * @return 进程名
+     */
+    public static String getProcessName(int pid) {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader("/proc/" + pid + "/cmdline"));
+            String processName = reader.readLine();
+            if (!TextUtils.isEmpty(processName)) {
+                processName = processName.trim();
+            }
+            return processName;
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+        return null;
+    }
 
     /**
      * 通过WebService接口上传ReceivBean中的所有数据。上传成功删除ReceivBean中已上传的数据
@@ -265,6 +286,7 @@ public class CommonTools {
         }
         return null;
     }
+
     /**
      * 把DrugButtonBean中的该通道Max的值置为0,该条记录的CURRENTAMO的值置为0
      *
@@ -274,40 +296,45 @@ public class CommonTools {
         drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
         drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "MAXAMOUNT", "0", "BUTTONVALU = ?", new String[]{BUTTONVALU});
     }
+
     /**
      * 把DrugButtonBean表对应的通道数量减1，并记录启动GPIO-1口的时间
+     *
      * @param BUTTONVALU 键值 对应通道
      */
     public static void changeDrugButtonBeanCur(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
-        List<DrugButtonBean> drugButtonBeans=drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null, "BUTTONVALU = ?", new String[]{BUTTONVALU});
-        for (DrugButtonBean drugButtonBean:drugButtonBeans) {
-            String curMount=	String.valueOf(Integer.parseInt(drugButtonBean.getCURRENTAMO())-1);
+        List<DrugButtonBean> drugButtonBeans = drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null, "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        for (DrugButtonBean drugButtonBean : drugButtonBeans) {
+            String curMount = String.valueOf(Integer.parseInt(drugButtonBean.getCURRENTAMO()) - 1);
             drugButtonBeanService.updata(ParameterManager.TABLENAME_DRUGBUTTONBEAN, "CURRENTAMO", curMount, "BUTTONVALU = ?", new String[]{BUTTONVALU});
         }
 
     }
+
     /**
      * 把DrugButtonBean表对应的通道的详情
+     *
      * @param BUTTONVALU 键值 对应通道
      */
     public static DrugButtonBean getDrugButtonBeanforBtn(DrugButtonBeanService drugButtonBeanService, String BUTTONVALU) {
-        List<DrugButtonBean> drugButtonBeans=	drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null,  "BUTTONVALU = ?", new String[]{BUTTONVALU});
+        List<DrugButtonBean> drugButtonBeans = drugButtonBeanService.query(ParameterManager.TABLENAME_DRUGBUTTONBEAN, null, "BUTTONVALU = ?", new String[]{BUTTONVALU});
         return drugButtonBeans.get(0);
     }
+
     /**
      * 记录系统当前时间
      */
-    public static String recordTime(int flag){
-        String timeString=null;
-        Long timeLong=System.currentTimeMillis();
+    public static String recordTime(int flag) {
+        String timeString = null;
+        Long timeLong = System.currentTimeMillis();
         SimpleDateFormat sdf = null;
-        if (flag==0) {
-            sdf=new SimpleDateFormat("yyyy-MM-dd");
-        }else if (flag==1) {
-            sdf=new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+        if (flag == 0) {
+            sdf = new SimpleDateFormat("yyyy-MM-dd");
+        } else if (flag == 1) {
+            sdf = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
         }
 
-        timeString=sdf.format(new Date(timeLong));
+        timeString = sdf.format(new Date(timeLong));
 
         return timeString;
     }

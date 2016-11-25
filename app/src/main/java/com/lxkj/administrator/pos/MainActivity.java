@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
                          * // * 刷身份证 //
                          */
                         // pos("360121199304201427");
-
                     }
                 }).setNegativeButton("取消", null).setCancelable(false).create()
                 .show();
