@@ -1,11 +1,9 @@
 package com.lxkj.administrator.pos;
 
 import android.app.AlertDialog;
-import android.app.ApplicationErrorReport;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -14,8 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.Button;
 
 import com.lxkj.administrator.pos.bean.DrugButtonBean;
 import com.lxkj.administrator.pos.bean.IdCardBean;
@@ -33,7 +29,6 @@ import com.lxkj.administrator.pos.utils.MySqliteHelper;
 import com.lxkj.administrator.pos.utils.ParameterManager;
 import com.romainpiel.shimmer.Shimmer;
 import com.romainpiel.shimmer.ShimmerTextView;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.Calendar;
 import java.util.List;
@@ -179,10 +174,6 @@ public class MainActivity extends AppCompatActivity {
                             shimmer.start(tv);
                         }
                         new OpenT().start();
-                        /**
-                         * // * 刷身份证 //
-                         */
-                        // pos("360121199304201427");
                     }
                 }).show();
     }
@@ -273,8 +264,6 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("关闭", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // builder_identity.show();//显示请刷身份证领取药具
-                        // pos(" ");
                         new OpenT().start();
                     }
                 }).setCancelable(false).create().show();

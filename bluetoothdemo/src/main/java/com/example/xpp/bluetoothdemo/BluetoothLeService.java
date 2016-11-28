@@ -164,7 +164,7 @@ public class BluetoothLeService extends Service {
         return super.onUnbind(intent);
     }
 
-    private LocalBinder mBinder = new LocalBinder();
+    public LocalBinder mBinder = new LocalBinder();
 
     public boolean initialize() {
         if (mBluetoothManager == null) {
