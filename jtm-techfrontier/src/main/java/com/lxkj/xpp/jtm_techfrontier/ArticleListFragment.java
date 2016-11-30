@@ -35,7 +35,7 @@ import java.util.List;
  * Created by Administrator on 2016/11/29.
  */
 
-public class WenZhangFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener ,AutoLoadRecyclerView.OnLoadListener{
+public class ArticleListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener ,AutoLoadRecyclerView.OnLoadListener{
     protected int mCategory = Article.ALL;
     protected ArticleAdapter mAdapter;
 
@@ -73,7 +73,9 @@ public class WenZhangFragment extends Fragment implements SwipeRefreshLayout.OnR
         mCategory = category;
     }
     protected void initAdapter() {
-        mAdapter = new ArticleAdapter(mDataSet);
+        //mAdapter = new ArticleAdapter(mDataSet);
+        mAdapter=new ArticleAdapter();
+        mAdapter.addItems(mDataSet);
         mAdapter.setOnItemClickListener(new OnItemClickListener<Article>() {
 
             @Override
@@ -180,7 +182,7 @@ public class WenZhangFragment extends Fragment implements SwipeRefreshLayout.OnR
         return "";
     }
     protected void loadArticle(Article article) {
-        Intent intent = new Intent(getActivity(), NeirongActivity.class);
+        Intent intent = new Intent(getActivity(), ArticleDetailActivity.class);
         intent.putExtra("post_id", article.post_id);
         intent.putExtra("title", article.title);
         startActivity(intent);
