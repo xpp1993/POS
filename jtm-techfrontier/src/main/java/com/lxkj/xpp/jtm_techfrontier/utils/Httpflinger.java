@@ -37,12 +37,12 @@ public final class Httpflinger {
                     urlConnection.connect();
                     String result = streamToString(urlConnection.getInputStream());
                     return parser.parseResponse(result);
-                } catch (MalformedURLException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
                 }
                 return null;
             }

@@ -10,7 +10,7 @@ android {
     buildToolsVersion '23.0.1'
 
     defaultConfig {
-        applicationId "com.lxkj.administrator.pos"
+        applicationId "com.lxkj.pos"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
