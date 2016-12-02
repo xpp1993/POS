@@ -1,13 +1,73 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/activity_main"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.lxkj.xpp.mvpdemo.MainActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Hello World!" />
-</RelativeLayout>
+    <include layout="@layout/toolbar_layout" />
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <!-- 文章列表界面 -->
+
+        <FrameLayout
+            android:id="@+id/articles_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- 侧滑菜单内容 -->
+
+        <LinearLayout
+            android:id="@+id/drawer_view"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:background="#f0f0f0"
+            android:orientation="vertical" >
+
+            <!-- 用户头像界面 -->
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@mipmap/user_bg"
+                android:clickable="true"
+                android:padding="10dp" >
+
+                <!-- 用户头像界面 -->
+
+                <ImageView
+                    android:id="@+id/user_icon_imageview"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@string/app_name"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/user_default" />
+
+                <TextView
+                    android:id="@+id/username_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@id/user_icon_imageview"
+                    android:gravity="center"
+                    android:text="@string/not_login"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <!-- 菜单界面 -->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/menu_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+
+</LinearLayout>
