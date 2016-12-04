@@ -48,7 +48,7 @@ public class ArticleDetailPresenter extends BasePresenter<ArticleDertailView> {
             public void onComplete(String result) {
                 mView.onHideLoding();
                 if (TextUtils.isEmpty(result)) {
-                    result = "为获取到文章内容";
+                    result = "未获取到文章内容";
                 }
                 mView.onFetcheedArticleContent(HtmlUtls.wrapArticleContent(title, result));
                 DatabaseHelper.getInstance().saveArricleDetail(new ArticleDetail(postId, reqUrl));

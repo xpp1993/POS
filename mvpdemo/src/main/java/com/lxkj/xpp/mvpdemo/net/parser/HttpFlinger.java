@@ -25,7 +25,7 @@ public final class HttpFlinger {
     }
 
     public static void get(String reqUrl, DataListener<String> listener) {
-
+        get(reqUrl,DEFAULT_PARSER,listener);
     }
 
     /**

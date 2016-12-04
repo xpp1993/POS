@@ -5,5 +5,5 @@ package com.lxkj.xpp.mvpdemo.mvpview;
  */
 
 public interface ArticleDertailView extends MvpView {
-    public void onFetcheedArticleContent(String html);
+    void onFetcheedArticleContent(String html);
 }

@@ -127,7 +127,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public ArticleDetail loadArticleDetail(String postId) {
-        Cursor cursor = mDatabase.rawQuery("select * from " + TABLE_ARTICLE_CONTENT + "where post_id = " + postId, null);
+        Cursor cursor = mDatabase.rawQuery("select * from " +
+                TABLE_ARTICLE_CONTENT + " where post_id = " + postId, null);
         ArticleDetail detail = parseArticleDetail(cursor);
         cursor.close();
         return detail;
